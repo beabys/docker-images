@@ -17,7 +17,7 @@ RUN apt-get update && apt-get install -y \
     g++
 
 # Compile and install Common PHP Extensions
-RUN docker-php-ext-install -j$(nproc) \
+RUN docker-php-ext-install \
     bz2 \
     intl \
     soap \

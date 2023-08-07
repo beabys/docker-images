@@ -18,6 +18,14 @@ RUN apt-get update && apt-get install -y \
 
 # Compile and install Common PHP Extensions
 RUN docker-php-ext-install \
+    bz2 \
+    intl \
+    soap \
+    iconv \
+    bcmath \
+    opcache \
+    calendar \
+    pdo_mysql \
     gd
 
 RUN yes | pecl install grpc \
