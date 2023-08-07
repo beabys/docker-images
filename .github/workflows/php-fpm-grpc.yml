@@ -24,10 +24,20 @@ jobs:
       - 
         name: Get the version
         id: get_version
-        run: echo $GITHUB_REF && echo VERSION=$(echo $GITHUB_REF | cut -d / -f 3) >> $GITHUB_OUTPUT
+        # Will take position 4 from $GITHUB_REF as values are refs/tags/{tagname}
+        # and tag name is php/
+        run: echo $GITHUB_REF && echo VERSION=$(echo $GITHUB_REF | cut -d / -f 4) >> $GITHUB_OUTPUT
       -
         name: Build php version
         run: |
-          docker buildx build --platform linux/amd64 \
-          -t ${{ github.repository_owner }}/php-grpc:${{ steps.get_version.outputs.VERSION }} \
+          docker buildx build \
+          --platform linux/amd64 \
+          -t ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }} \
           --file php/Dockerfile-php --push .
+      -
+        name: Build php-grpc version
+        run: |
+          docker buildx build \
+          --platform linux/amd64 \
+          -t ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }} \
+          --file php/Dockerfile-php-grpc --push .
