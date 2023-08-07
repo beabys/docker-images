@@ -3,7 +3,7 @@ name: php-fpm-grpc ci
 on:
   push:
     tags:
-      - 'php:*'
+      - 'php/*'
 
 jobs:
   docker:
