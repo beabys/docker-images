@@ -39,5 +39,5 @@ jobs:
         run: |
           docker buildx build \
           --platform linux/amd64 \
-          -t ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }} \
+          -t ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }}-grpc \
           --file php/Dockerfile-php-grpc --push .
