@@ -2,10 +2,10 @@ ARG CENTOS_VERSION=7
 ARG GOLANG_VERSION=1.17.13
 FROM beabys/centos${CENTOS_VERSION}_git as beabys_centos_base
 
-FROM beabys_centos_base AS base-amd64-1.20.4
+FROM beabys_centos_base AS base-amd64-1.20.7
 ARG GOLANG_VERSION=$GOLANG_VERSION
 ARG GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
-ARG GOLANG_DOWNLOAD_SHA256=698ef3243972a51ddb4028e4a1ac63dc6d60821bf18e59a807e051fee0a385bd
+ARG GOLANG_DOWNLOAD_SHA256=f0a87f1bcae91c4b69f8dc2bc6d7e6bfcd7524fceec130af525058c0c17b1b44
 FROM beabys_centos_base AS base-amd64-1.19.9
 ARG GOLANG_VERSION=$GOLANG_VERSION
 ARG GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.gz
@@ -16,10 +16,10 @@ ARG GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-amd64.tar.
 ARG GOLANG_DOWNLOAD_SHA256=c9b099b68d93f5c5c8a8844a89f8db07eaa58270e3a1e01804f17f4cf8df02f5
 FROM beabys_centos_base AS base-amd64-1.17.13
 
-FROM beabys_centos_base AS base-arm64-1.20.4
+FROM beabys_centos_base AS base-arm64-1.20.7
 ARG GOLANG_VERSION=$GOLANG_VERSION
 ARG GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-arm64.tar.gz
-ARG GOLANG_DOWNLOAD_SHA256=105889992ee4b1d40c7c108555222ca70ae43fccb42e20fbf1eebb822f5e72c6
+ARG GOLANG_DOWNLOAD_SHA256=44781ae3b153c3b07651d93b6bc554e835a36e2d72a696281c1e4dad9efffe43
 FROM beabys_centos_base AS base-arm64-1.19.9
 ARG GOLANG_VERSION=$GOLANG_VERSION
 ARG GOLANG_DOWNLOAD_URL=https://golang.org/dl/go$GOLANG_VERSION.linux-arm64.tar.gz
