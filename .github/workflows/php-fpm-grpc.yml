@@ -12,10 +12,6 @@ jobs:
       -
         name: Checkout
         uses: actions/checkout@v3
-      - 
-        name: Exit if not on main branch
-        if: endsWith(github.event.base_ref, 'main') == false
-        run: exit -1
       -
         name: Login to DockerHub
         uses: docker/login-action@v2
