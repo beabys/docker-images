@@ -31,13 +31,15 @@ jobs:
         name: Build php version
         run: |
           docker buildx build \
+          --build-arg="PHP_FPM_VERSION=${{ steps.get_version.outputs.VERSION }}" \
           --platform linux/amd64 \
-          -t ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }} \
+          --tag ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }} \
           --file php/Dockerfile-php --push .
       -
         name: Build php-grpc version
         run: |
           docker buildx build \
+          --build-arg="PHP_FPM_VERSION=${{ steps.get_version.outputs.VERSION }}" \
           --platform linux/amd64 \
-          -t ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }}-grpc \
+          --tag ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }}-grpc \
           --file php/Dockerfile-php-grpc --push .

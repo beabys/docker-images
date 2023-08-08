@@ -34,7 +34,8 @@ jobs:
           --build-arg="CENTOS_VERSION=7" \
           --build-arg="GIT_VERSION=${{ steps.get_version.outputs.VERSION }}" \
           --platform linux/amd64,linux/arm64 \
-          -t ${{ github.repository_owner }}/centos7_git:latest,${{ github.repository_owner }}/centos7_git:${{ steps.get_version.outputs.VERSION }}  \
+          -tag ${{ github.repository_owner }}/centos7_git:latest \
+          -tag ${{ github.repository_owner }}/centos7_git:${{ steps.get_version.outputs.VERSION }}  \
           --file centos/git/Dockerfile --push .
       -
         name: Build centos 8 version
@@ -43,5 +44,6 @@ jobs:
           --build-arg="CENTOS_VERSION=8" \
           --build-arg="GIT_VERSION=${{ steps.get_version.outputs.VERSION }}" \
           --platform linux/amd64,linux/arm64 \
-          -t ${{ github.repository_owner }}/centos8_git:latest,${{ github.repository_owner }}/centos8_git:${{ steps.get_version.outputs.VERSION }}  \
+          -tag ${{ github.repository_owner }}/centos8_git:latest \
+          -tag ${{ github.repository_owner }}/centos8_git:${{ steps.get_version.outputs.VERSION }}  \
           --file centos/git/Dockerfile --push .

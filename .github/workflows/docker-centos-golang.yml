@@ -34,7 +34,8 @@ jobs:
           --build-arg="CENTOS_VERSION=7" \
           --build-arg="GOLANG_VERSION=${{ steps.get_version.outputs.VERSION }}" \
           --platform linux/amd64,linux/arm64 \
-          -t ${{ github.repository_owner }}/centos7_golang:latest,${{ github.repository_owner }}/centos7_golang:${{ steps.get_version.outputs.VERSION }}  \
+          -tag ${{ github.repository_owner }}/centos7_golang:latest \
+          -tag ${{ github.repository_owner }}/centos7_golang:${{ steps.get_version.outputs.VERSION }}  \
           --file centos/golang/Dockerfile --push .
       -
         name: Build centos 8 version
@@ -43,5 +44,6 @@ jobs:
           --build-arg="CENTOS_VERSION=8" \
           --build-arg="GOLANG_VERSION=${{ steps.get_version.outputs.VERSION }}" \
           --platform linux/amd64,linux/arm64 \
-          -t ${{ github.repository_owner }}/centos8_golang:latest,${{ github.repository_owner }}/centos8_golang:${{ steps.get_version.outputs.VERSION }}  \
+          -tag ${{ github.repository_owner }}/centos8_golang:latest \
+          -tag ${{ github.repository_owner }}/centos8_golang:${{ steps.get_version.outputs.VERSION }}  \
           --file centos/golang/Dockerfile --push .
