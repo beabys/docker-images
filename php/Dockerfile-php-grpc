@@ -5,8 +5,7 @@ FROM php:${PHP_FPM_VERSION}
 RUN apt-get update && apt-get install -y \
     autoconf \
     zlib1g-dev \
-    php-dev \
-    php-pear
+    g++
 
 RUN yes | pecl install grpc \
     && docker-php-ext-enable grpc
