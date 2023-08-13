@@ -1,6 +1,13 @@
 ARG PHP_FPM_VERSION=8.1.19-fpm
 FROM php:${PHP_FPM_VERSION}
 
+# Install packages required to compile php extensions
+RUN apt-get update && apt-get install -y \
+    autoconf \
+    zlib1g-dev \
+    php-dev \
+    php-pear
+
 RUN yes | pecl install grpc \
     && docker-php-ext-enable grpc
 
