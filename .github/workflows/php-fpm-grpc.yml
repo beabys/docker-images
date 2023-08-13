@@ -28,14 +28,6 @@ jobs:
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
       -
-        name: Build php version
-        run: |
-          docker buildx build \
-          --build-arg="PHP_FPM_VERSION=${{ steps.get_version.outputs.VERSION }}" \
-          --platform linux/amd64 \
-          --tag ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }} \
-          --file php/Dockerfile-php --push .
-      -
         name: Build php-grpc version
         run: |
           docker buildx build \
