@@ -32,6 +32,6 @@ jobs:
         run: |
           docker buildx build \
           --build-arg="PHP_FPM_VERSION=${{ steps.get_version.outputs.VERSION }}" \
-          --platform linux/amd64 \
+          --platform linux/amd64,linux/arm64 \
           --tag ${{ github.repository_owner }}/php:${{ steps.get_version.outputs.VERSION }}-grpc \
           --file php/Dockerfile-php-grpc --push .
