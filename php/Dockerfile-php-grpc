@@ -1,5 +1,5 @@
 ARG PHP_FPM_VERSION=8.1.19-fpm
-FROM php:${PHP_FPM_VERSION}
+FROM --platform=${BUILDPLATFORM} php:${PHP_FPM_VERSION}
 
 # Install packages required to compile php extensions
 RUN apt-get update && apt-get install -y \
