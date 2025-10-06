@@ -34,4 +34,5 @@ jobs:
           --build-arg="PHP_FPM_VERSION=${{ steps.get_version.outputs.VERSION }}" \
           --platform linux/amd64,linux/arm64 \
           --tag ${{ github.repository_owner }}/php-grpc:${{ steps.get_version.outputs.VERSION }}-grpc \
+          --tag ${{ github.repository_owner }}/php-grpc:latest \
           --file php/Dockerfile-php-grpc --push .
