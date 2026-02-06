@@ -7,6 +7,7 @@ on:
 
 jobs:
   docker:
+    if: github.ref != 'refs/tags/php/latest'
     runs-on: ubuntu-latest
     steps:
       -
@@ -25,14 +26,39 @@ jobs:
         # and tag name is php/
         run: echo $GITHUB_REF && echo VERSION=$(echo $GITHUB_REF | cut -d / -f 4) >> $GITHUB_OUTPUT
       -
+        name: Detect if php/latest points to this commit
+        id: detect_latest
+        run: |
+          # fetch tags so we can inspect php/latest
+          git fetch --tags origin
+          LATEST_TAG_SHA=$(git rev-parse -q --verify refs/tags/php/latest^{commit} 2>/dev/null || echo "")
+          echo "latest_tag_sha=$LATEST_TAG_SHA"
+          echo "commit_sha=$GITHUB_SHA"
+          if [ -n "$LATEST_TAG_SHA" ] && [ "$LATEST_TAG_SHA" = "$GITHUB_SHA" ]; then
+            echo "LATEST=true" >> $GITHUB_OUTPUT
+          else
+            echo "LATEST=false" >> $GITHUB_OUTPUT
+          fi
+      -
         name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       -
         name: Build php-grpc version
         run: |
-          docker buildx build \
-          --build-arg="PHP_FPM_VERSION=${{ steps.get_version.outputs.VERSION }}" \
-          --platform linux/amd64,linux/arm64 \
-          --tag ${{ github.repository_owner }}/php-grpc:${{ steps.get_version.outputs.VERSION }}-grpc \
-          --tag ${{ github.repository_owner }}/php-grpc:latest \
-          --file php/Dockerfile-php-grpc --push .
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          LATEST=${{ steps.detect_latest.outputs.LATEST }}
+          echo "Building for VERSION=${VERSION}, LATEST=${LATEST}"
+          if [ "$LATEST" = "true" ]; then
+            docker buildx build \
+              --build-arg="PHP_FPM_VERSION=${VERSION}" \
+              --platform linux/amd64,linux/arm64 \
+              --tag ${{ github.repository_owner }}/php-grpc:${VERSION}-grpc \
+              --tag ${{ github.repository_owner }}/php-grpc:latest \
+              --file php/Dockerfile-php-grpc --push .
+          else
+            docker buildx build \
+              --build-arg="PHP_FPM_VERSION=${VERSION}" \
+              --platform linux/amd64,linux/arm64 \
+              --tag ${{ github.repository_owner }}/php-grpc:${VERSION}-grpc \
+              --file php/Dockerfile-php-grpc --push .
+          fi
