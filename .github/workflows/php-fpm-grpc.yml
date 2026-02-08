@@ -29,9 +29,8 @@ jobs:
         name: Detect if php/latest points to this commit
         id: detect_latest
         run: |
-          # fetch tags so we can inspect php/latest
-          git fetch --tags origin
-          LATEST_TAG_SHA=$(git rev-parse -q --verify refs/tags/php/latest^{commit} 2>/dev/null || echo "")
+          # get remote php/latest tag SHA without fetching/updating local tags
+          LATEST_TAG_SHA=$(git ls-remote --tags origin php/latest | awk '{print $1}' || echo "")
           echo "latest_tag_sha=$LATEST_TAG_SHA"
           echo "commit_sha=$GITHUB_SHA"
           if [ -n "$LATEST_TAG_SHA" ] && [ "$LATEST_TAG_SHA" = "$GITHUB_SHA" ]; then
