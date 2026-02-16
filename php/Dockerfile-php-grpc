@@ -1,16 +1,40 @@
 ARG PHP_FPM_VERSION=8.1.19-fpm
-FROM --platform=${BUILDPLATFORM} php:${PHP_FPM_VERSION}
 
-# Install packages required to compile php extensions
-RUN apt-get update && apt-get install -y \
-    autoconf \
-    zlib1g-dev \
-    g++
+# Builder: full image with build deps to compile grpc
+FROM --platform=${BUILDPLATFORM} php:${PHP_FPM_VERSION} AS builder
 
-RUN yes | pecl install grpc \
-    && docker-php-ext-enable grpc
+RUN set -eux \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends \
+       autoconf \
+       make \
+       gcc \
+       g++ \
+       pkg-config \
+       zlib1g-dev \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN \
-    set -eux \
-    \
-    && find "$(php-config --extension-dir)" -name '*.so' -type f -exec strip --strip-all {} \;
+RUN yes | pecl install grpc
+
+# Strip the built extension(s) to reduce size in the copied artifact
+RUN set -eux \
+    && EXT_DIR=$(php -r 'echo ini_get("extension_dir");') \
+    && find "$EXT_DIR" -name '*.so' -type f -exec strip --strip-all {} + || true
+
+# Runtime: FPM image that receives the built extension and config
+FROM --platform=${BUILDPLATFORM} php:${PHP_FPM_VERSION} AS runtime
+
+# Copy the built extensions from builder
+COPY --from=builder /usr/local/lib/php/extensions/ /usr/local/lib/php/extensions/
+
+# Enable the grpc extension
+RUN printf "extension=grpc.so\n" > /usr/local/etc/php/conf.d/20-grpc.ini
+
+# Install any minimal runtime deps, then clean up
+RUN set -eux \
+    && apt-get update \
+    && apt-get install -y --no-install-recommends ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Ensure extensions are stripped (best-effort)
+RUN find /usr/local/lib/php/extensions -name '*.so' -type f -exec strip --strip-all {} + || true
