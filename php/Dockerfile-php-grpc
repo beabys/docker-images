@@ -14,7 +14,7 @@ RUN set -eux \
        zlib1g-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN yes | pecl install grpc-1.70.0
+RUN pecl install grpc-stable && pecl clear-cache
 
 # Strip the built extension(s) to reduce size in the copied artifact
 RUN set -eux \
