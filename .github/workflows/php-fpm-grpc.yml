@@ -4,43 +4,41 @@ on:
   push:
     tags:
       - 'php/*'
+  workflow_dispatch:
+    inputs:
+      VERSION:
+        description: 'PHP version (e.g., 8.4.19)'
+        required: true
+        type: string
+      LATEST:
+        description: 'Push latest tag to DockerHub'
+        required: false
+        default: 'false'
+        type: boolean
 
 jobs:
   docker:
-    if: github.ref != 'refs/tags/php/latest'
     runs-on: ubuntu-latest
     steps:
       -
         name: Checkout
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          fetch-tags: true
       -
         name: Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-      - 
-        name: Get the version
-        id: get_version
-        # Will take position 4 from $GITHUB_REF as values are refs/tags/{tagname}
-        # and tag name is php/
-        run: echo $GITHUB_REF && echo VERSION=$(echo $GITHUB_REF | cut -d / -f 4) >> $GITHUB_OUTPUT
       -
-        name: Detect if this is the latest version
-        id: detect_latest
+        name: Get version and latest flag
+        id: get_version
         run: |
-          VERSION=${{ steps.get_version.outputs.VERSION }}
-          # Remove -fpm suffix to check for -latest
-          VERSION_NO_FPM=${VERSION%-fpm}
-          # Check if version has -latest suffix
-          if [[ "$VERSION_NO_FPM" == *-latest ]]; then
-            echo "VERSION_WITHOUT_SUFFIX=${VERSION_NO_FPM%-latest}" >> $GITHUB_OUTPUT
-            echo "LATEST=true" >> $GITHUB_OUTPUT
+          # Use input if workflow_dispatch, otherwise parse from tag
+          if [ "${{ github.event.inputs.VERSION }}" != "" ]; then
+            echo "VERSION=${{ github.event.inputs.VERSION }}" >> $GITHUB_OUTPUT
+            echo "LATEST=${{ github.event.inputs.LATEST }}" >> $GITHUB_OUTPUT
           else
-            echo "VERSION_WITHOUT_SUFFIX=$VERSION_NO_FPM" >> $GITHUB_OUTPUT
+            echo "VERSION=$(echo ${{ github.ref_name }} | cut -d / -f 2 | sed 's/-fpm//')" >> $GITHUB_OUTPUT
             echo "LATEST=false" >> $GITHUB_OUTPUT
           fi
       -
@@ -49,8 +47,8 @@ jobs:
       -
         name: Build php-grpc version
         run: |
-          VERSION=${{ steps.detect_latest.outputs.VERSION_WITHOUT_SUFFIX }}
-          LATEST=${{ steps.detect_latest.outputs.LATEST }}
+          VERSION=${{ steps.get_version.outputs.VERSION }}
+          LATEST=${{ steps.get_version.outputs.LATEST }}
           echo "Building for VERSION=${VERSION}, LATEST=${LATEST}"
           if [ "$LATEST" = "true" ]; then
             docker buildx build \
