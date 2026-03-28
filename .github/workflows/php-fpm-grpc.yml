@@ -13,7 +13,7 @@ on:
       LATEST:
         description: 'Push latest tag to DockerHub'
         required: false
-        default: 'false'
+        default: false
         type: boolean
 
 jobs:
@@ -33,12 +33,18 @@ jobs:
         name: Get version and latest flag
         id: get_version
         run: |
-          # Use input if workflow_dispatch, otherwise parse from tag
-          if [ "${{ github.event.inputs.VERSION }}" != "" ]; then
-            echo "VERSION=${{ github.event.inputs.VERSION }}" >> $GITHUB_OUTPUT
-            echo "LATEST=${{ github.event.inputs.LATEST }}" >> $GITHUB_OUTPUT
+          # Parse version and detect latest from tag name
+          # Tag format: php/x.y.z-fpm or php/x.y.z-latest-fpm
+          TAG_NAME=${{ github.ref_name }}
+          # Extract version (remove php/ prefix and -fpm suffix)
+          VERSION=$(echo "$TAG_NAME" | cut -d / -f 2 | sed 's/-fpm//')
+          # Check if -latest suffix exists
+          if echo "$VERSION" | grep -q "\-latest"; then
+            VERSION_WITHOUT_LATEST=$(echo "$VERSION" | sed 's/-latest//')
+            echo "VERSION=$VERSION_WITHOUT_LATEST" >> $GITHUB_OUTPUT
+            echo "LATEST=true" >> $GITHUB_OUTPUT
           else
-            echo "VERSION=$(echo ${{ github.ref_name }} | cut -d / -f 2 | sed 's/-fpm//')" >> $GITHUB_OUTPUT
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
             echo "LATEST=false" >> $GITHUB_OUTPUT
           fi
       -
