@@ -1,4 +1,4 @@
-PHP_TAG=php/$(shell echo $(VERSION) | sed 's/-latest//')-fpm
+PHP_TAG=php/$(VERSION)-fpm
 
 .PHONY: php-tag
 php-tag:
@@ -6,7 +6,7 @@ php-tag:
 		echo "Usage: make php-tag VERSION=x.y.z[-latest]"; \
 		exit 1; \
 	fi
-	@git tag -d $(PHP_TAG) 2>/dev/null || true
-	@git tag -a $(PHP_TAG) -m"$(PHP_TAG)"
-	@git push -f origin $(PHP_TAG)
-	@echo "Pushed tag: $(PHP_TAG)"
+	@git tag -d $(PHP_TAG)-fpm 2>/dev/null || true
+	@git tag -a $(PHP_TAG)-fpm -m"$(PHP_TAG)-fpm"
+	@git push -f origin $(PHP_TAG)-fpm
+	@echo "Pushed tag: $(PHP_TAG)-fpm"
